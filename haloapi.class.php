@@ -9,7 +9,7 @@
  *
  * Author: Gaspard Rosay
  * Date: 04.11.15
- * WPFL Licence
+ * WTPFL Licence
  *
  */
 
