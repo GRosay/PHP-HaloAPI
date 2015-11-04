@@ -20,4 +20,4 @@ Then, simply initialize the class and call all functions you need.
 * Complete documentation.
 
 ## Licence
-This project is under WTFPL licence. See licence.md file.
+This project is under WTFPL licence. See licence file.
