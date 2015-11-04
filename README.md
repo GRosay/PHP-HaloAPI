@@ -16,12 +16,12 @@ Replace the API_DEV_KEY by your API key in the file.
 Then, simply initialize the class and call all functions you need.
 
 ## ToDo
-* Finalize implementation of all Stats and Metadata APIs function.
+* Finalize implementation of all Metadata APIs function.
 * Complete documentation.
 
 ## Done
-* Emblem and Spartan image API calls
-* Player matches API call
+* Profil API part
+* Stats API part
 * Map variant API call
 
 ## Licence

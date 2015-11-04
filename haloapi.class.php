@@ -179,6 +179,7 @@ class haloapi
      */
     public function fGetMapVariantData($sVariantId){
         $sUrl = self::BASE_URL."/metadata/".$this->sTitle."/metadata/map-variant/".$sVariantId;
+        $this->aParameters = array();
         $response = $this->fCallAPI($sUrl);
         $oJson = $this->fGetBody($response);
 
@@ -217,6 +218,56 @@ class haloapi
 
         return $oJson;
     }
+
+    /*
+    * fGetPostGameCarnage - public
+    *
+    * Return datas of given match
+    *
+    * Parameters:
+    *      $sMatchId: id of the match wanted
+    *      $sMatchType: type of the wanted match (arena, campaign, custom or warzone)
+    *
+    * Return:
+    *      $oJson: json object containing match datas
+    */
+    public function fGetPostGameCarnage($sMatchId, $sMatchType){
+        $sUrl = self::BASE_URL."/stats/".$this->sTitle."/".$sMatchType."/matches/".$sMatchId;
+        $this->aParameters = array();
+        $response = $this->fCallAPI($sUrl);
+        $oJson = $this->fGetBody($response);
+
+        return $oJson;
+    }
+
+    /*
+    * fGetPostGameCarnage - public
+    *
+    * Return datas of given match
+    *
+    * Parameters:
+    *      $sMatchType: type of the wanted match (arena, campaign, custom or warzone)
+    *
+    * Return:
+    *      $oJson: json object containing match datas
+    */
+    public function fGetServiceRecords($sMatchType){
+        $sUrl = self::BASE_URL."/stats/".$this->sTitle."/servicerecords/".$sMatchType;
+        $this->aParameters = array();
+        $sPlayList = "";
+        foreach($this->aPlayerNames as $id => $val){
+            $sPlayList .= ($id != 0 ? "," : null).$val;
+        }
+
+        $this->aParameters['players'] = $sPlayList;
+
+        $response = $this->fCallAPI($sUrl);
+        $oJson = $this->fGetBody($response);
+
+        return $oJson;
+    }
+
+
 
 ###
 }
