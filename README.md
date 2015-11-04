@@ -19,5 +19,10 @@ Then, simply initialize the class and call all functions you need.
 * Finalize implementation of all Stats and Metadata APIs function.
 * Complete documentation.
 
+## Done
+* Emblem and Spartan image API calls
+* Player matches API call
+* Map variant API call
+
 ## Licence
 This project is under WTFPL licence. See licence file.
