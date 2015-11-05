@@ -2,7 +2,7 @@
 /**
  *
  * PHP-HaloAPI
- * v 0.0.1
+ * v 0.1.0
  *
  * Exemple page
  *
@@ -12,10 +12,9 @@
  *
  */
 
-require_once 'HTTP/Request2.php'; // Necessary if you want the class to work :)
-require_once('class/haloapi.class.php');
+require_once('haloapi.class.php');
 
-$aPlayerNames = array('BananasSplitter', 'Snipedown'); // Creating an array of player.
+$aPlayerNames = array('BananasSplitter', 'SatanicGeek'); // Creating an array of player.
 
 $oHaloApi = new haloapi($aPlayerNames); // Initializing the class
 

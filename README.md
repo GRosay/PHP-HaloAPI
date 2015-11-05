@@ -1,4 +1,4 @@
-#PHP-HaloAPI
+#PHP-HaloAPI v0.1.0
 
 **This is a WIP project**
 
@@ -6,7 +6,6 @@
 This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API.
 
 ## Requirements
-* Apache HTTP_Request2
 * Halo Developer API key (https://developer.haloapi.com/)
 
 ## How to use
@@ -17,12 +16,15 @@ Then, simply initialize the class and call all functions you need.
 
 ## ToDo
 * Finalize implementation of all Metadata APIs function.
-* Complete documentation.
+* Review and complete documentation.
 
 ## Done
-* Profil API part
+* Profile API part
 * Stats API part
 * Map variant API call
 
 ## Licence
 This project is under WTFPL licence. See licence file.
+
+## Changelog
+* No more needing of HTTP_Request2 class. The class now use curl.
