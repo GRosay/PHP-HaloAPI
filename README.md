@@ -1,4 +1,4 @@
-#PHP-HaloAPI v0.1.0
+#PHP-HaloAPI v0.1.1
 
 **This is a WIP project**
 
