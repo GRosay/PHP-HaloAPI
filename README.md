@@ -15,16 +15,16 @@ Replace the API_DEV_KEY by your API key in the file.
 Then, simply initialize the class and call all functions you need.
 
 ## ToDo
-* Finalize implementation of all Metadata APIs function.
 * Review and complete documentation.
 
 ## Done
 * Profile API part
 * Stats API part
-* Map variant API call
+* Metadata API part
 
 ## Licence
 This project is under WTFPL licence. See licence file.
 
 ## Changelog
 * No more needing of HTTP_Request2 class. The class now use curl.
+* Finalizing implementation of all metadatas calls
