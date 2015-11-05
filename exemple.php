@@ -20,11 +20,11 @@ $aPlayerNames = array('BananasSplitter', 'Snipedown'); // Creating an array of p
 $oHaloApi = new haloapi($aPlayerNames); // Initializing the class
 
 
-$sEmblemUrl = $oHaloApi->fGetEmblemImg(512); // Get emblem img - size of 512
+$sEmblemUrl = $oHaloApi->getEmblem(512); // Get emblem img - size of 512
 
 echo "<img src='$sEmblemUrl' />";
 
-$oJson = $oHaloApi->fGetServiceRecords("campaign"); // Get service records for campaign
+$oJson = $oHaloApi->getServiceRecords("campaign"); // Get service records for campaign
 
 echo "<pre>".print_r($oJson, 1)."</pre>";
 

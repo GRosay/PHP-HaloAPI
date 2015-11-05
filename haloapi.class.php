@@ -7,7 +7,7 @@
  *
  * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API.
  *
- * Author: Gaspard Rosay
+ * Author: Gaspard Rosay - @BananasSplitter
  * Date: 04.11.15
  * WTPFL Licence
  *
@@ -60,7 +60,7 @@ class haloapi
      * Return:
      *      $response: the API response
      */
-    private function fCallAPI($sUrl){
+    private function callAPI($sUrl){
         $request = new Http_Request2($sUrl);
         $url = $request->getUrl();
 
@@ -90,7 +90,7 @@ class haloapi
      * Return:
      *      $sJson: the json string de-encoded contained in the $response
      */
-    private function fGetBody($response){
+    private function getResponseBody($response){
         $sJson = $response->getBody();
         return json_decode($sJson);
     }
@@ -106,7 +106,7 @@ class haloapi
      * Return:
      *      $sJson: the header contained in the $response
      */
-    private function fGetHeader($response){
+    private function getResponseHeader($response){
         $aHeader = $response->getHeader();
         return $aHeader;
     }
@@ -124,15 +124,15 @@ class haloapi
      * Return:
      *      $aHeader['location']: url of the img
      */
-    public function fGetEmblemImg($sSize = null){
+    public function getEmblem($sSize = null){
         $sUrl = self::BASE_URL."profile/".$this->sTitle."/profiles/".$this->aPlayerNames[0]."/emblem";
         $this->aParameters = array();
 
         if(!is_null($sSize))
             $this->aParameters['size'] = $sSize;
 
-        $response = $this->fCallAPI($sUrl);
-        $aHeader = $this->fGetHeader($response);
+        $response = $this->callAPI($sUrl);
+        $aHeader = $this->getResponseHeader($response);
 
         return $aHeader['location'];
     }
@@ -148,21 +148,21 @@ class haloapi
      * Return:
      *      $aHeader['location']: url of the img
      */
-    public function fGetSpartanImg($sSize = null){
+    public function getSpartanImg($sSize = null){
         $sUrl = self::BASE_URL."profile/".$this->sTitle."/profiles/".$this->aPlayerNames[0]."/spartan";
         $this->aParameters = array();
         if(!is_null($sSize))
             $this->aParameters['size'] = $sSize;
 
-        $response = $this->fCallAPI($sUrl);
-        $aHeader = $this->fGetHeader($response);
+        $response = $this->callAPI($sUrl);
+        $aHeader = $this->getResponseHeader($response);
 
         return $aHeader['location'];
     }
 ### End of profile part
 
 ### Metadata part
-    public function fGetAllMapsData(){
+    public function getAllMapsData(){
 
     }
 
@@ -177,11 +177,11 @@ class haloapi
      * Return:
      *      $oJson: json object containing datas of map variant
      */
-    public function fGetMapVariantData($sVariantId){
+    public function getMapVariantData($sVariantId){
         $sUrl = self::BASE_URL."/metadata/".$this->sTitle."/metadata/map-variant/".$sVariantId;
         $this->aParameters = array();
-        $response = $this->fCallAPI($sUrl);
-        $oJson = $this->fGetBody($response);
+        $response = $this->callAPI($sUrl);
+        $oJson = $this->getResponseBody($response);
 
         return $oJson;
     }
@@ -203,7 +203,7 @@ class haloapi
      * Return:
      *      $oJson: json object containing all matches datas
      */
-    public function fGetPlayerMatches($aParams = array()){
+    public function getPlayerMatches($aParams = array()){
         $sUrl = self::BASE_URL."/stats/".$this->sTitle."/players/".$this->aPlayerNames[0]."/matches";
         $this->aParameters = array();
         if(isset($aParams['modes']) && !is_null($aParams['modes']))
@@ -213,8 +213,8 @@ class haloapi
         if(isset($aParams['count']) && !is_null($aParams['count']))
             $this->aParameters['count'] = $aParams['count'];
 
-        $response = $this->fCallAPI($sUrl);
-        $oJson = $this->fGetBody($response);
+        $response = $this->callAPI($sUrl);
+        $oJson = $this->getResponseBody($response);
 
         return $oJson;
     }
@@ -231,11 +231,11 @@ class haloapi
     * Return:
     *      $oJson: json object containing match datas
     */
-    public function fGetPostGameCarnage($sMatchId, $sMatchType){
+    public function getPostGameCarnage($sMatchId, $sMatchType){
         $sUrl = self::BASE_URL."/stats/".$this->sTitle."/".$sMatchType."/matches/".$sMatchId;
         $this->aParameters = array();
-        $response = $this->fCallAPI($sUrl);
-        $oJson = $this->fGetBody($response);
+        $response = $this->callAPI($sUrl);
+        $oJson = $this->getResponseBody($response);
 
         return $oJson;
     }
@@ -251,7 +251,7 @@ class haloapi
     * Return:
     *      $oJson: json object containing match datas
     */
-    public function fGetServiceRecords($sMatchType){
+    public function getServiceRecords($sMatchType){
         $sUrl = self::BASE_URL."/stats/".$this->sTitle."/servicerecords/".$sMatchType;
         $this->aParameters = array();
         $sPlayList = "";
@@ -261,8 +261,8 @@ class haloapi
 
         $this->aParameters['players'] = $sPlayList;
 
-        $response = $this->fCallAPI($sUrl);
-        $oJson = $this->fGetBody($response);
+        $response = $this->callAPI($sUrl);
+        $oJson = $this->getResponseBody($response);
 
         return $oJson;
     }
