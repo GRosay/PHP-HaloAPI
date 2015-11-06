@@ -11,6 +11,8 @@
  * Date: 04.11.15
  * WTPFL Licence
  *
+ * !! This is the Composer class, please do not use this class if you're not using composer !!
+ *
  */
 
 namespace PHPHaloApi;
@@ -34,7 +36,7 @@ class haloapi
      */
     function __construct($sApiKey, $aPlayerNames, $sTitle = "h5"){
 
-        $this->$sApiKey = $sApiKey;
+        $this->sApiKey = $sApiKey;
         $this->aPlayerNames = $aPlayerNames;
         $this->sTitle = $sTitle;
 

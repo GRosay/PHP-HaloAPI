@@ -33,7 +33,7 @@ class haloapi
      */
     function __construct($sApiKey, $aPlayerNames, $sTitle = "h5"){
 
-        $this->$sApiKey = $sApiKey;
+        $this->sApiKey = $sApiKey;
         $this->aPlayerNames = $aPlayerNames;
         $this->sTitle = $sTitle;
 
