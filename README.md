@@ -18,6 +18,8 @@ You can also install it through composer:
 composer require bananassplitter/php-haloapi
 ```
 
+_Additional information: as the package is still in beta, be sure to set your minimum-stability to "beta"_
+
 ## Usage
 
 To use the class, simply add it to your PHP file and then initialize:
