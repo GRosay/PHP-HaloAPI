@@ -3,7 +3,7 @@
 /**
  *
  * PHP-HaloAPI
- * v 1.0.0-beta
+ * v 1.0.1-beta
  *
  * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API.
  *
@@ -20,10 +20,16 @@ class haloapi
 {
 
     const BASE_URL          = "https://www.haloapi.com/"; // Base url for API, may change on day...
-    
+
     private $sApiKey        = ""; // Will contain the API key
     private $sTitle         = ""; // Correspond to the game title - for now only Halo 5 (h5)
     private $aPlayerNames   = array(); // List of users (functions may use only the first user)
+
+    public static $queryLimit = 10; // The number of queries that you are allowed to perform within the alloted time window.
+    public static $queryWindowSecs = 10; // The time window on which queries are bound, in seconds.
+
+    private static $queryCount = 0;
+    private static $queryWindowStartTime;
 
 
     /**
@@ -39,7 +45,6 @@ class haloapi
         $this->sApiKey = $sApiKey;
         $this->aPlayerNames = $aPlayerNames;
         $this->sTitle = $sTitle;
-
     }
 
 ### Global functions
@@ -53,6 +58,8 @@ class haloapi
      * @return $response: the API response
      */
     private function callAPI($sUrl){
+        self::throttle();
+
         $ch = curl_init();
 
         curl_setopt_array($ch, array(
@@ -65,11 +72,11 @@ class haloapi
             )
         ));
 
-        if(!curl_exec($ch)){
+        $resp = curl_exec($ch);
+        if(!$resp){
             die('Error in API call: "' . curl_error($ch) . '" - Code: ' . curl_errno($ch));
         }
         else{
-            $resp = curl_exec($ch);
             // Then, after your curl_exec call:
             $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
             $header = substr($resp, 0, $header_size);
@@ -78,6 +85,28 @@ class haloapi
         curl_close($ch);
 
         return array('header' => $header, 'body' => $body);
+    }
+
+    private static function throttle() {
+      self::$queryCount++;
+
+      if(self::$queryWindowStartTime === null) {
+        self::$queryWindowStartTime = new DateTime();
+      }
+
+      if(self::$queryCount > self::$queryLimit) {
+
+        $now = new DateTime();
+        $diffSec = $now->getTimestamp() - self::$queryWindowStartTime->getTimestamp();
+        // If we've exceeded the query count, and we still are within the query window, then wait.
+        if($diffSec < self::$queryWindowSecs) {
+          sleep(self::$queryWindowSecs - $diffSec + 1);
+        }
+
+        // Then, once we've waited, if necessary, we'll assume that we're beyond the query window, so we'll start our throttling over.
+        self::$queryWindowStartTime = new DateTime();
+        self::$queryCount = 1;
+      }
     }
 
     /**
