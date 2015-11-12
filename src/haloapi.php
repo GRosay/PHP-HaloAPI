@@ -3,7 +3,7 @@
 /**
  *
  * PHP-HaloAPI
- * v 1.0.1-beta
+ * v 1.0.2-beta
  *
  * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API.
  *
@@ -136,6 +136,29 @@ class haloapi
 
         return $headers;
     }
+
+    /**
+     * @name $this->decodeJson
+     *
+     * Return decoded string from json - return an error if json isn't correct
+     *
+     * @param $json: the encoded json string
+     *
+     * @return $json: the json string once decoded
+     */
+    private function decodeJson($json){
+
+        $json = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($json));
+        $json = json_decode($json);
+
+        if(json_last_error() == 0){
+            return $json;
+        }
+        else{
+            return "ERROR JSON(".json_last_error()."): ".json_last_error_msg();
+        }
+
+    }
 ###
 
 ### Profile part
@@ -195,7 +218,7 @@ class haloapi
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/campaign-missions";
         $response = $this->callAPI($sUrl);
 
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -208,8 +231,7 @@ class haloapi
     public function getCommendations(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/commendations";
         $response = $this->callAPI($sUrl);
-
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -223,7 +245,7 @@ class haloapi
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/csr-designations";
         $response = $this->callAPI($sUrl);
 
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -236,8 +258,7 @@ class haloapi
     public function getEnemies(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/enemies";
         $response = $this->callAPI($sUrl);
-        $response['body'] = str_replace('&quot;', '"', $response['body']); // !! Important for decode to work here
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -250,7 +271,7 @@ class haloapi
     public function getFlexibleStats(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/flexible-stats";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -263,7 +284,7 @@ class haloapi
     public function getGameBaseVariants(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/game-base-variants";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -278,7 +299,7 @@ class haloapi
     public function getGameVariantData($sVariantId){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/game-variants/".$sVariantId;
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -291,7 +312,7 @@ class haloapi
     public function getImpulses(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/impulses";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -307,7 +328,7 @@ class haloapi
         $sUrl = self::BASE_URL."/metadata/".$this->sTitle."/metadata/map-variant/".$sVariantId;
         $response = $this->callAPI($sUrl);
 
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -320,7 +341,7 @@ class haloapi
     public function getMaps(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/maps";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -333,7 +354,7 @@ class haloapi
     public function getMedals(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/medals";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -346,7 +367,7 @@ class haloapi
     public function getPlaylists(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/playlists";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -361,11 +382,11 @@ class haloapi
     public function getRequisitionPack($sPackId){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/requisition-packs/".$sPackId;
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
-     * @name getRequisitionPack
+     * @name getRequisition
      *
      * Return information about the given requisition
      *
@@ -376,7 +397,7 @@ class haloapi
     public function getRequisition($sRequisitionId){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/requisitions/".$sRequisitionId;
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -389,7 +410,7 @@ class haloapi
     public function getSkulls(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/playlists";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -402,7 +423,7 @@ class haloapi
     public function getSpartanRanks(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/spartan-ranks";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -415,7 +436,7 @@ class haloapi
     public function getTeamColors(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/team-colors";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -428,7 +449,7 @@ class haloapi
     public function getVehicles(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/vehicles";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -441,7 +462,7 @@ class haloapi
     public function getWeapons(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/weapons";
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -458,7 +479,7 @@ class haloapi
     public function getMetadata($sMetadata, $sId = null){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/".$sMetadata.(!is_null($sId) ? "/".$sId : null);
         $response = $this->callAPI($sUrl);
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
 ### End metadate part
@@ -495,7 +516,7 @@ class haloapi
 
         $response = $this->callAPI($sUrl);
 
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -512,7 +533,7 @@ class haloapi
         $sUrl = self::BASE_URL."/stats/".$this->sTitle."/".$sMatchType."/matches/".$sMatchId;
         $response = $this->callAPI($sUrl);
 
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
     /**
@@ -533,7 +554,7 @@ class haloapi
 
         $response = $this->callAPI($sUrl);
 
-        return json_decode($response['body']);
+        return $this->decodeJson($response['body']);
     }
 
 
