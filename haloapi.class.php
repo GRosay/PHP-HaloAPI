@@ -22,12 +22,14 @@ class haloapi
     private $sTitle         = ""; // Correspond to the game title - for now only Halo 5 (h5)
     private $aPlayerNames   = array(); // List of users (functions may use only the first user)
 
+    private $lastHeaders    = array(); // Array of parsed headers from the last API call
+    public $lastApiVersion = ""; // X-343-Version header from the last API call
+
     public static $queryLimit = 10; // The number of queries that you are allowed to perform within the alloted time window.
     public static $queryWindowSecs = 10; // The time window on which queries are bound, in seconds.
 
     private static $queryCount = 0;
     private static $queryWindowStartTime;
-
 
     /**
      * @name __construct
@@ -38,7 +40,6 @@ class haloapi
      * @param $sTitle: the title concerned by the API (for now, only h5 is valid) - default: h5
      */
     function __construct($sApiKey, $aPlayerNames, $sTitle = "h5"){
-
         $this->sApiKey = $sApiKey;
         $this->aPlayerNames = $aPlayerNames;
         $this->sTitle = $sTitle;
@@ -81,55 +82,71 @@ class haloapi
         }
         curl_close($ch);
 
+        // Parse the headers and store them in the lastHeaders class property
+        $this->lastHeaders = $this->getHeaders($header);
+
+        // Keep track of the API version in the lastApiVersion class property
+        if(isset($this->lastHeaders['X-343-Version'])){
+            $this->lastApiVersion = $this->lastHeaders['X-343-Version'];
+        }
+
         return array('header' => $header, 'body' => $body);
     }
 
-    private static function throttle() {
-      self::$queryCount++;
 
-      if(self::$queryWindowStartTime === null) {
-        self::$queryWindowStartTime = new DateTime();
-      }
+    /**
+     * @name throttle
+     *
+     * Throttle API calls using the $queryLimit class property
+     **
+     * @return null
+     */
+    private static function throttle(){
+        self::$queryCount++;
 
-      if(self::$queryCount > self::$queryLimit) {
-
-        $now = new DateTime();
-        $diffSec = $now->getTimestamp() - self::$queryWindowStartTime->getTimestamp();
-        // If we've exceeded the query count, and we still are within the query window, then wait.
-        if($diffSec < self::$queryWindowSecs) {
-          sleep(self::$queryWindowSecs - $diffSec + 1);
+        if(self::$queryWindowStartTime === null){
+            self::$queryWindowStartTime = new DateTime();
         }
 
-        // Then, once we've waited, if necessary, we'll assume that we're beyond the query window, so we'll start our throttling over.
-        self::$queryWindowStartTime = new DateTime();
-        self::$queryCount = 1;
-      }
+        if(self::$queryCount > self::$queryLimit){
+            $now = new DateTime();
+            $diffSec = $now->getTimestamp() - self::$queryWindowStartTime->getTimestamp();
+
+            // If we've exceeded the query count, and we still are within the query window, then wait.
+            if($diffSec < self::$queryWindowSecs){
+                sleep(self::$queryWindowSecs - $diffSec + 1);
+            }
+
+            // Then, once we've waited, if necessary, we'll assume that we're beyond the query window, so we'll start our throttling over.
+            self::$queryWindowStartTime = new DateTime();
+            self::$queryCount = 1;
+        }
     }
 
     /**
-     * @name getLocation
+     * @name getHeaders
      *
-     * Return Location information from curl header
+     * Return headers information from curl header
      *
      * @param $sHeader: header returned by curl
      *
      * @return $headers: array containing all headers infos
      */
-    private function getLocation($sHeader){
+    private function getHeaders($sHeader){
 
         $headers = array();
 
         $header_text = substr($sHeader, 0, strpos($sHeader, "\r\n\r\n"));
 
-        foreach (explode("\r\n", $header_text) as $i => $line)
-            if ($i === 0)
+        foreach(explode("\r\n", $header_text) as $i => $line){
+            if($i === 0){
                 $headers['http_code'] = $line;
-            else
-            {
-                list ($key, $value) = explode(': ', $line);
-
+            }
+            else{
+                list($key, $value) = explode(': ', $line);
                 $headers[$key] = $value;
             }
+        }
 
         return $headers;
     }
@@ -145,10 +162,15 @@ class haloapi
      */
     private function decodeJson($json){
 
-        $json = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($json));
+        // utf8_encode the json string only if the response charset was not set to utf-8 already
+        if(!isset($this->lastHeaders['Content-Type']) || $this->lastHeaders['Content-Type'] != 'application/json; charset=utf-8'){
+            $json = utf8_encode($json);
+        }
+
+        $json = iconv('UTF-8', 'UTF-8//IGNORE', $json);
         $json = json_decode($json);
 
-        if(json_last_error() == 0){
+        if(json_last_error() === JSON_ERROR_NONE){
             return $json;
         }
         else{
@@ -171,14 +193,14 @@ class haloapi
     public function getEmblem($sSize = null){
         $sUrl = self::BASE_URL."profile/".$this->sTitle."/profiles/".$this->aPlayerNames[0]."/emblem";
 
-        if(!is_null($sSize))
+        if(!is_null($sSize)){
             $sUrl.= "?size=".$sSize;
+        }
 
         $response = $this->callAPI($sUrl);
+        $location = isset($this->lastHeaders['Location']) ? $this->lastHeaders['Location'] : false;
 
-        $header = $this->getLocation($response['header']);
-
-        return $header['Location'];
+        return $location;
     }
 
     /**
@@ -192,13 +214,15 @@ class haloapi
      */
     public function getSpartanImg($sSize = null){
         $sUrl = self::BASE_URL."profile/".$this->sTitle."/profiles/".$this->aPlayerNames[0]."/spartan";
-        if(!is_null($sSize))
+
+        if(!is_null($sSize)){
             $sUrl.= "?size=".$sSize;
+        }
 
         $response = $this->callAPI($sUrl);
-        $header = $this->getLocation($response['header']);
+        $location = isset($this->lastHeaders['Location']) ? $this->lastHeaders['Location'] : false;
 
-        return $header['Location'];
+        return $location;
     }
 ### End of profile part
 
@@ -228,6 +252,7 @@ class haloapi
     public function getCommendations(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/commendations";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -255,6 +280,7 @@ class haloapi
     public function getEnemies(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/enemies";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -268,6 +294,7 @@ class haloapi
     public function getFlexibleStats(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/flexible-stats";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -281,6 +308,7 @@ class haloapi
     public function getGameBaseVariants(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/game-base-variants";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -296,6 +324,7 @@ class haloapi
     public function getGameVariantData($sVariantId){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/game-variants/".$sVariantId;
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -309,6 +338,7 @@ class haloapi
     public function getImpulses(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/impulses";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -338,6 +368,7 @@ class haloapi
     public function getMaps(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/maps";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -351,6 +382,7 @@ class haloapi
     public function getMedals(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/medals";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -364,6 +396,7 @@ class haloapi
     public function getPlaylists(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/playlists";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -379,6 +412,7 @@ class haloapi
     public function getRequisitionPack($sPackId){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/requisition-packs/".$sPackId;
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -394,6 +428,7 @@ class haloapi
     public function getRequisition($sRequisitionId){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/requisitions/".$sRequisitionId;
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -407,6 +442,7 @@ class haloapi
     public function getSkulls(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/playlists";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -420,6 +456,7 @@ class haloapi
     public function getSpartanRanks(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/spartan-ranks";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -433,6 +470,7 @@ class haloapi
     public function getTeamColors(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/team-colors";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -446,6 +484,7 @@ class haloapi
     public function getVehicles(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/vehicles";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -459,6 +498,7 @@ class haloapi
     public function getWeapons(){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/weapons";
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
@@ -476,6 +516,7 @@ class haloapi
     public function getMetadata($sMetadata, $sId = null){
         $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/".$sMetadata.(!is_null($sId) ? "/".$sId : null);
         $response = $this->callAPI($sUrl);
+
         return $this->decodeJson($response['body']);
     }
 
