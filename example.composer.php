@@ -2,7 +2,7 @@
 /**
  *
  * PHP-HaloAPI
- * v 1.0.2-beta
+ * v 1.0.3-beta
  *
  * Composer example page
  *
