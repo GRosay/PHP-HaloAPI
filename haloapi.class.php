@@ -352,7 +352,7 @@ class haloapi
      * @return $oJson: json object containing datas of map variant
      */
     public function getMapVariantData($sVariantId){
-        $sUrl = self::BASE_URL."/metadata/".$this->sTitle."/metadata/map-variant/".$sVariantId;
+        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/map-variant/".$sVariantId;
         $response = $this->callAPI($sUrl);
 
         return $this->decodeJson($response['body']);
@@ -537,7 +537,7 @@ class haloapi
      * @return $oJson: json object containing all matches datas
      */
     public function getPlayerMatches($aParams = array()){
-        $sUrl = self::BASE_URL."/stats/".$this->sTitle."/players/".$this->aPlayerNames[0]."/matches";
+        $sUrl = self::BASE_URL."stats/".$this->sTitle."/players/".$this->aPlayerNames[0]."/matches";
         $i = 0;
         if(isset($aParams['modes']) && !is_null($aParams['modes'])){
             $sUrl .= ($i == 0 ? "?" : "&")."modes=".$aParams['modes'];
@@ -568,7 +568,7 @@ class haloapi
      * @return $oJson: json object containing match datas
      */
     public function getPostGameCarnage($sMatchId, $sMatchType){
-        $sUrl = self::BASE_URL."/stats/".$this->sTitle."/".$sMatchType."/matches/".$sMatchId;
+        $sUrl = self::BASE_URL."stats/".$this->sTitle."/".$sMatchType."/matches/".$sMatchId;
         $response = $this->callAPI($sUrl);
 
         return $this->decodeJson($response['body']);
@@ -584,7 +584,8 @@ class haloapi
      * @return $oJson: json object containing match datas
      */
     public function getServiceRecords($sMatchType){
-        $sUrl = self::BASE_URL."/stats/".$this->sTitle."/servicerecords/".$sMatchType;
+        $sUrl = self::BASE_URL."stats/".$this->sTitle."/servicerecords/".$sMatchType;
+        
 
         foreach($this->aPlayerNames as $id => $val){
             $sUrl .= ($id == 0 ? "?players=" : ",").$val;
