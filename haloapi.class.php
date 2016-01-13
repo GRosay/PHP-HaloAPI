@@ -63,6 +63,7 @@ class haloapi
         curl_setopt_array($ch, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HEADER         => true,
+            CURLOPT_ENCODING       => "gzip",
             CURLOPT_URL            => $sUrl,
             CURLOPT_USERAGENT      => 'PHP-HaloAPI',
             CURLOPT_HTTPHEADER     => array(
@@ -168,7 +169,7 @@ class haloapi
         }
 
         $json = iconv('UTF-8', 'UTF-8//IGNORE', $json);
-        $json = json_decode($json);
+        $json = json_decode($json,1);
 
         if(json_last_error() === JSON_ERROR_NONE){
             return $json;
@@ -440,7 +441,21 @@ class haloapi
      * @return $oJson: json object containing skulls data
      */
     public function getSkulls(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/playlists";
+        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/skulls";
+        $response = $this->callAPI($sUrl);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getSeasons
+     *
+     * Return information about seasons
+     **
+     * @return $oJson: json object containing seasons data
+     */
+    public function getSeasons(){
+        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/seasons";
         $response = $this->callAPI($sUrl);
 
         return $this->decodeJson($response['body']);
@@ -583,12 +598,16 @@ class haloapi
      *
      * @return $oJson: json object containing match datas
      */
-    public function getServiceRecords($sMatchType){
+    public function getServiceRecords($sMatchType, $sSeasonId){
         $sUrl = self::BASE_URL."stats/".$this->sTitle."/servicerecords/".$sMatchType;
         
 
         foreach($this->aPlayerNames as $id => $val){
             $sUrl .= ($id == 0 ? "?players=" : ",").$val;
+        }
+
+        if(!is_null($sSeasonId)){
+            $sUrl.= "?seasonId=".$sSeasonId;
         }
 
         $response = $this->callAPI($sUrl);
