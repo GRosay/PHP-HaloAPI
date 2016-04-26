@@ -598,7 +598,7 @@ class haloapi
      *
      * @return $oJson: json object containing match datas
      */
-    public function getServiceRecords($sMatchType, $sSeasonId){
+    public function getServiceRecords($sMatchType, $sSeasonId = null){
         $sUrl = self::BASE_URL."stats/".$this->sTitle."/servicerecords/".$sMatchType;
         
 
