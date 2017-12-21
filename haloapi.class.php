@@ -600,7 +600,6 @@ class haloapi
      */
     public function getServiceRecords($sMatchType, $sSeasonId = null){
         $sUrl = self::BASE_URL."stats/".$this->sTitle."/servicerecords/".$sMatchType;
-        
 
         foreach($this->aPlayerNames as $id => $val){
             $sUrl .= ($id == 0 ? "?players=" : ",").$val;
@@ -615,7 +614,121 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getPlayerMapVariant
+     * 
+     * Returns information about the given map variant.
+     * 
+     * @param $sMapVariantId: the ID of the map variant.
+     * 
+     * @return $oJson: json object containing map variant info.
+     */
+    public function getPlayerMapVariant($sMapVariantId) {
+        $sUrl = self::BASE_URL."ugc/".$this->sTitle."/players/".$this->aPlayerNames[0]."/mapvariants/".$sMapVariantId;
 
+        $response = $this->callAPI($sUrl);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerMapVariants
+     * 
+     * Returns information about all of the users's map variants.
+     * 
+     * @param $aParams: array - default: null
+     *          'start': the id of first element to return - if not set or set to 0, first match will be sent
+     *          'count': the number of elements to return - if not set return 25
+     *          'sort' : When specified, this indicates what field should be used to sort the results as the primary sort order. 
+     *                   When omitted, "modified" (descending) is the assumed primary sort order. 
+     *                   Allowed sort fields are: name, description, accessibility, created, modified, bookmarkCount.
+     *          'order': When specified, this indicates the ordering that will be applied. When omitted, "desc" is assumed. 
+     *                   Allowed order values are: asc, desc.
+     * 
+     * @return $oJson: json object containing all map variant info.
+     */
+    public function getPlayerMapVariants($aParams = array()) {
+        $sUrl = self::BASE_URL."ugc/".$this->sTitle."/players/".$this->aPlayerNames[0]."/mapvariants";
+        $i = 0;
+        if(isset($aParams['start']) && !is_null($aParams['start'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."start=".$aParams['start'];
+            $i++;
+        }
+        if(isset($aParams['count']) && !is_null($aParams['count'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."count=".$aParams['count'];
+            $i++;
+        }
+        if(isset($aParams['sort']) && !is_null($aParams['sort'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."sort=".$aParams['sort'];
+            $i++;
+        }
+        if(isset($aParams['order']) && !is_null($aParams['order'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."order=".$aParams['order'];
+            $i++;
+        }
+
+        $response = $this->callAPI($sUrl);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerGameVariant
+     * 
+     * Returns information about the given game variant.
+     * 
+     * @param $sGameVariantId: the ID of the game variant.
+     * 
+     * @return $oJson: json object containing game variant info.
+     */
+    public function getPlayerGameVariant($sGameVariantId) {
+        $sUrl = self::BASE_URL."ugc/".$this->sTitle."/players/".$this->aPlayerNames[0]."/gamevariants/".$sGameVariantId;
+
+        $response = $this->callAPI($sUrl);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerGameVariants
+     * 
+     * Returns information about all of the users's game variants.
+     * 
+     * @param $aParams: array - default: null
+     *          'start': the id of first element to return - if not set or set to 0, first match will be sent
+     *          'count': the number of elements to return - if not set return 25
+     *          'sort' : When specified, this indicates what field should be used to sort the results as the primary sort order. 
+     *                   When omitted, "modified" (descending) is the assumed primary sort order. 
+     *                   Allowed sort fields are: name, description, accessibility, created, modified, bookmarkCount.
+     *          'order': When specified, this indicates the ordering that will be applied. When omitted, "desc" is assumed. 
+     *                   Allowed order values are: asc, desc.
+     * 
+     * @return $oJson: json object containing all game variant info.
+     */
+    public function getPlayerGameVariants($aParams = array()) {
+        $sUrl = self::BASE_URL."ugc/".$this->sTitle."/players/".$this->aPlayerNames[0]."/gamevariants";
+        $i = 0;
+        if(isset($aParams['start']) && !is_null($aParams['start'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."start=".$aParams['start'];
+            $i++;
+        }
+        if(isset($aParams['count']) && !is_null($aParams['count'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."count=".$aParams['count'];
+            $i++;
+        }
+        if(isset($aParams['sort']) && !is_null($aParams['sort'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."sort=".$aParams['sort'];
+            $i++;
+        }
+        if(isset($aParams['order']) && !is_null($aParams['order'])){
+            $sUrl .= ($i == 0 ? "?" : "&")."order=".$aParams['order'];
+            $i++;
+        }
+
+        $response = $this->callAPI($sUrl);
+
+        return $this->decodeJson($response['body']);
+    }
 
 ###
 }
