@@ -1,5 +1,7 @@
 #PHP-HaloAPI v1.0.3-beta
 
+**IMPORTANT: This wrapper is discontinued but you can still use it (some adaptations may be necessary as the API has changed over time).**
+
 **This is a beta project (since API is still in beta)**
 
 ## Presentation
@@ -63,4 +65,4 @@ This project is under **WTFPL** licence. See licence file.
 * No more needing of HTTP_Request2 class. The class now use curl.
 
 ## ToDo
-Documentation site.
+Discontinued
