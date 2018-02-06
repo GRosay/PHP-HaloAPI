@@ -2,6 +2,7 @@
 
 **This is a beta project**
 
+
 ## Presentation
 This class has for purpose to simplify the work of PHP developers who wants to use the official Halo 5 API (beta).
 
@@ -54,7 +55,8 @@ $oApi = new haloapi(sApiKey , array('BananasSplitter')); // Initialize the class
 See _example.composer.php_ file for concrete example.
 
 ## Licence
-This project is under **WTFPL** licence. See licence file.
+This project is under **Apache 2.0** licence. See licence file.
 
 ## Changelog
 * Adding vagrant to project for development purpose
+
