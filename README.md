@@ -1,8 +1,7 @@
 #PHP-HaloAPI v1.0.3-beta
 
-**IMPORTANT: This wrapper is discontinued but you can still use it (some adaptations may be necessary as the API has changed over time).**
+**This is a beta project**
 
-**This is a beta project (since API is still in beta)**
 
 ## Presentation
 This class has for purpose to simplify the work of PHP developers who wants to use the official Halo 5 API (beta).
@@ -59,10 +58,5 @@ See _example.composer.php_ file for concrete example.
 This project is under **Apache 2.0** licence. See licence file.
 
 ## Changelog
-* Moving API key to a class's initialization parameter
-* Creating composer package
-* Finalizing implementation of all metadatas calls
-* No more needing of HTTP_Request2 class. The class now use curl.
+* Adding vagrant to project for development purpose
 
-## ToDo
-Discontinued
