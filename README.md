@@ -56,7 +56,7 @@ $oApi = new haloapi(sApiKey , array('BananasSplitter')); // Initialize the class
 See _example.composer.php_ file for concrete example.
 
 ## Licence
-This project is under **WTFPL** licence. See licence file.
+This project is under **Apache 2.0** licence. See licence file.
 
 ## Changelog
 * Moving API key to a class's initialization parameter
