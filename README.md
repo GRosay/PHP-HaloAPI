@@ -1,4 +1,4 @@
-#PHP-HaloAPI v1.0.3-beta
+# PHP-HaloAPI v1.0.3-beta
 
 **This is a beta project**
 
@@ -21,7 +21,7 @@ composer require bananassplitter/php-haloapi
 
 _Additional information: as the package is still in beta, be sure to set your minimum-stability to "beta"_
 
-## Usage
+## Usage
 
 To use the class, simply add it to your PHP file and then initialize:
 
