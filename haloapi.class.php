@@ -352,8 +352,9 @@ class haloapi
      *
      * @return $oJson: json object containing datas of map variant
      */
-    public function getMapVariantData($sVariantId){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/map-variant/".$sVariantId;
+    public function getMapVariantData($sVariantId)
+    {
+        $sUrl = self::BASE_URL . "metadata/" . $this->sTitle . "/metadata/map-variants/" . $sVariantId;
         $response = $this->callAPI($sUrl);
 
         return $this->decodeJson($response['body']);
