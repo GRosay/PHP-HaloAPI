@@ -3,13 +3,13 @@
 /**
  *
  * PHP-HaloAPI
- * v 1.0.3-beta
+ * v 2.0.0-beta
  *
  * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API.
  *
  * Author: Gaspard Rosay - @BananasSplitter
- * Date: 04.11.15
- * WTPFL Licence
+ *
+ * Apache-2.0 Licence
  *
  * !! This is the Composer class, please do not use this class if you're not using composer !!
  *
@@ -21,9 +21,9 @@ class haloapi
 
     const BASE_URL          = "https://www.haloapi.com/"; // Base url for API, may change on day...
 
-    private $sApiKey        = ""; // Will contain the API key
-    private $sTitle         = ""; // Correspond to the game title - for now only Halo 5 (h5)
-    private $aPlayerNames   = array(); // List of users (functions may use only the first user)
+    private $apiKey        = ""; // Will contain the API key
+    private $title         = ""; // Correspond to the game title - for now only Halo 5 (title = h5)
+    private $playerNames   = array(); // List of users (functions may use only the first user)
 
     private $lastHeaders    = array(); // Array of parsed headers from the last API call
     public $lastApiVersion = ""; // X-343-Version header from the last API call
@@ -39,13 +39,13 @@ class haloapi
      *
      * Initialize the class
      *
-     * @param $aPlayerNames: an array containing list of players
-     * @param $sTitle: the title concerned by the API (for now, only h5 is valid) - default: h5
+     * @param $playerNames: an array containing list of players
+     * @param $title: the title concerned by the API (for now, only h5 is valid) - default: h5
      */
-    function __construct($sApiKey, $aPlayerNames, $sTitle = "h5"){
-        $this->sApiKey = $sApiKey;
-        $this->aPlayerNames = $aPlayerNames;
-        $this->sTitle = $sTitle;
+    function __construct($apiKey, $playerNames, $title = "h5"){
+        $this->apiKey = $apiKey;
+        $this->playerNames = $playerNames;
+        $this->title = $title;
     }
 
 ### Global functions
@@ -54,11 +54,11 @@ class haloapi
      *
      * Make curl request to the API
      *
-     * @param $sUrl: url to use in API call
+     * @param $url: url to use in API call
      *
      * @return $response: the API response
      */
-    private function callAPI($sUrl){
+    private function callAPI($url){
         self::throttle();
 
         $ch = curl_init();
@@ -66,10 +66,10 @@ class haloapi
         curl_setopt_array($ch, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HEADER         => true,
-            CURLOPT_URL            => $sUrl,
+            CURLOPT_URL            => $url,
             CURLOPT_USERAGENT      => 'PHP-HaloAPI',
             CURLOPT_HTTPHEADER     => array(
-                'Ocp-Apim-Subscription-Key: '.$this->sApiKey
+                'Ocp-Apim-Subscription-Key: '.$this->apiKey
             )
         ));
 
@@ -184,23 +184,44 @@ class haloapi
 ###
 
 ### Profile part
+
+    /**
+     * @name getAppearance
+     *
+     * Return Metadata for the Player-created Game Variant
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdc2e21091812784ce8c2/operations/5969689a2109180f287972a8?
+     *
+     * @return $oJson: json object containing player's Metadata
+     */
+    public function getAppearance(){
+        $url = self::BASE_URL."profile/".$this->title."/profiles/".$this->playerNames[0]."/appearance";
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
     /**
      * @name getEmblem
      *
      * Return the url of player's emblem img
      *
-     * @param $sSize: size wanted - default: null
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdc2e21091812784ce8c2/operations/58acdc2e2109180bdcacc404?
+     *
+     * @param $size: size wanted - default: null
      *
      * @return $aHeader['location']: url of the img
      */
-    public function getEmblem($sSize = null){
-        $sUrl = self::BASE_URL."profile/".$this->sTitle."/profiles/".$this->aPlayerNames[0]."/emblem";
+    public function getEmblem($size = null){
+        $url = self::BASE_URL."profile/".$this->title."/profiles/".$this->playerNames[0]."/emblem";
 
-        if(!is_null($sSize)){
-            $sUrl.= "?size=".$sSize;
+        if(!is_null($size)){
+            $url.= "?size=".$size;
         }
 
-        $response = $this->callAPI($sUrl);
+        $response = $this->callAPI($url);
         $location = isset($this->lastHeaders['Location']) ? $this->lastHeaders['Location'] : false;
 
         return $location;
@@ -211,18 +232,21 @@ class haloapi
      *
      * Return the url of player's spartan img
      *
-     * @param $sSize: size wanted - default: null
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdc2e21091812784ce8c2/operations/58acdc2e2109180bdcacc405?
+     *
+     * @param $size: size wanted - default: null
      *
      * @return $aHeader['location']: url of the img
      */
-    public function getSpartanImg($sSize = null){
-        $sUrl = self::BASE_URL."profile/".$this->sTitle."/profiles/".$this->aPlayerNames[0]."/spartan";
+    public function getSpartanImg($size = null){
+        $url = self::BASE_URL."profile/".$this->title."/profiles/".$this->playerNames[0]."/spartan";
 
-        if(!is_null($sSize)){
-            $sUrl.= "?size=".$sSize;
+        if(!is_null($size)){
+            $url.= "?size=".$size;
         }
 
-        $response = $this->callAPI($sUrl);
+        $response = $this->callAPI($url);
         $location = isset($this->lastHeaders['Location']) ? $this->lastHeaders['Location'] : false;
 
         return $location;
@@ -235,12 +259,15 @@ class haloapi
      * @name getCampaignMissions
      *
      * Return information of all campaign missions
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc421
+     *
      * @return $oJson: json object containing campaign informations
      */
     public function getCampaignMissions(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/campaign-missions";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/campaign-missions";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -249,12 +276,15 @@ class haloapi
      * @name getCommendations
      *
      * Return information about all commendations
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc422?
+     *
      * @return $oJson: json object containing commendations data
      */
     public function getCommendations(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/commendations";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/commendations";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -263,12 +293,15 @@ class haloapi
      * @name getCSRDesignations
      *
      * Return information about all CSR Designations
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc423?
+     *
      * @return $oJson: json object containing csr designations data
      */
     public function getCSRDesignations(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/csr-designations";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/csr-designations";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -277,12 +310,15 @@ class haloapi
      * @name getEnemies
      *
      * Return information about all enemies (IA)
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc424?
+     *
      * @return $oJson: json object containing enemies data
      */
     public function getEnemies(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/enemies";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/enemies";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -291,12 +327,15 @@ class haloapi
      * @name getFlexibleStats
      *
      * Return information about flexible stats
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc425?
+     *
      * @return $oJson: json object containing flexible stats data
      */
     public function getFlexibleStats(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/flexible-stats";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/flexible-stats";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -305,12 +344,15 @@ class haloapi
      * @name getGameBaseVariants
      *
      * Return information about game base variants
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc426?
+     *
      * @return $oJson: json object containing game base variants data
      */
     public function getGameBaseVariants(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/game-base-variants";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/game-base-variants";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -320,13 +362,16 @@ class haloapi
      *
      * Return information about the given game variant
      *
-     * @param $sPackId: ID of the game variant wanted
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc427?
+     *
+     * @param $packId: ID of the game variant wanted
      *
      * @return $oJson: json object containing game variant data
      */
-    public function getGameVariantData($sVariantId){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/game-variants/".$sVariantId;
-        $response = $this->callAPI($sUrl);
+    public function getGameVariantData($variantId){
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/game-variants/".$variantId;
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -335,12 +380,15 @@ class haloapi
      * @name getImpulses
      *
      * Return information about impulses
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc428?
+     *
      * @return $oJson: json object containing impulses data
      */
     public function getImpulses(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/impulses";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/impulses";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -350,13 +398,16 @@ class haloapi
      *
      * Return information about the givent map variant
      *
-     * @param $sVariantId: the id of the map variant wanted
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc429?
+     *
+     * @param $variantId: the id of the map variant wanted
      *
      * @return $oJson: json object containing datas of map variant
      */
-    public function getMapVariantData($sVariantId){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/map-variant/".$sVariantId;
-        $response = $this->callAPI($sUrl);
+    public function getMapVariantData($variantId){
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/map-variant/".$variantId;
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -365,12 +416,15 @@ class haloapi
      * @name getMaps
      *
      * Return information about maps
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc42a?
+     *
      * @return $oJson: json object containing maps data
      */
     public function getMaps(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/maps";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/maps";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -379,12 +433,15 @@ class haloapi
      * @name getMedals
      *
      * Return information about medals
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc42b?
+     *
      * @return $oJson: json object containing medals data
      */
     public function getMedals(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/medals";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/medals";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -393,28 +450,15 @@ class haloapi
      * @name getPlaylists
      *
      * Return information about playlists
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc42c?
+     *
      * @return $oJson: json object containing playlists data
      */
     public function getPlaylists(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/playlists";
-        $response = $this->callAPI($sUrl);
-
-        return $this->decodeJson($response['body']);
-    }
-
-    /**
-     * @name getRequisitionPack
-     *
-     * Return information about the given requisition pack
-     *
-     * @param $sPackId: ID of the requisition pack wanted
-     **
-     * @return $oJson: json object containing requisition pack data
-     */
-    public function getRequisitionPack($sPackId){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/requisition-packs/".$sPackId;
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/playlists";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -424,13 +468,52 @@ class haloapi
      *
      * Return information about the given requisition
      *
-     * @param $sRequisitionId: ID of the requisition wanted
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc42d?
+     *
+     * @param $requisitionId: ID of the requisition wanted
      *
      * @return $oJson: json object containing requisition data
      */
-    public function getRequisition($sRequisitionId){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/requisitions/".$sRequisitionId;
-        $response = $this->callAPI($sUrl);
+    public function getRequisition($requisitionId){
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/requisitions/".$requisitionId;
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getRequisitionPack
+     *
+     * Return information about the given requisition pack
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc42e?
+     *
+     * @param $packId: ID of the requisition pack wanted
+     **
+     * @return $oJson: json object containing requisition pack data
+     */
+    public function getRequisitionPack($packId){
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/requisition-packs/".$packId;
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getSeasons
+     *
+     * Return information about seasons
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc42f?
+     *
+     * @return $oJson: json object containing seasons data
+     */
+    public function getSeasons(){
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/seasons/";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -439,12 +522,15 @@ class haloapi
      * @name getSkulls
      *
      * Return information about skulls
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc430?
+     *
      * @return $oJson: json object containing skulls data
      */
     public function getSkulls(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/playlists";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/playlists";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -453,12 +539,15 @@ class haloapi
      * @name getSpartanRanks
      *
      * Return information about spartan ranks
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc431?
+     *
      * @return $oJson: json object containing spartan ranks data
      */
     public function getSpartanRanks(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/spartan-ranks";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/spartan-ranks";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -467,12 +556,15 @@ class haloapi
      * @name getTeamColors
      *
      * Return information about team colors
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc432?
+     *
      * @return $oJson: json object containing team colors data
      */
     public function getTeamColors(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/team-colors";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/team-colors";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -481,12 +573,15 @@ class haloapi
      * @name getVehicles
      *
      * Return information about vehicles
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc433?
+     *
      * @return $oJson: json object containing vehicles data
      */
     public function getVehicles(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/vehicles";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/vehicles";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -495,12 +590,15 @@ class haloapi
      * @name getWeapons
      *
      * Return information about weapons
-     **
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/58ace18c2109180bdcacc434?
+     *
      * @return $oJson: json object containing weapons data
      */
     public function getWeapons(){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/weapons";
-        $response = $this->callAPI($sUrl);
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/weapons";
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -511,14 +609,14 @@ class haloapi
      * Return information about given metadata
      * Can be used instead of calling direct function
      *
-     * @param $sMetadata name of metadata wanted
-     * @param $sId optional ID
+     * @param $metadata name of metadata wanted
+     * @param $id optional ID
      *
      * @return $oJson: json object containing weapons data
      */
-    public function getMetadata($sMetadata, $sId = null){
-        $sUrl = self::BASE_URL."metadata/".$this->sTitle."/metadata/".$sMetadata.(!is_null($sId) ? "/".$sId : null);
-        $response = $this->callAPI($sUrl);
+    public function getMetadata($metadata, $id = null){
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/".$metadata.(!is_null($id) ? "/".$id : null);
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -528,51 +626,163 @@ class haloapi
 ### Stats part
 
     /**
+     * @name getCompany
+     *
+     * Return information about the given company
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/596968ade2f7f7051870d29f?
+     *
+     * @param $companyId: ID of the company wanted
+     *
+     * @return $oJson: json object containing company data
+     */
+    public function getCompany($companyId){
+        $url = self::BASE_URL."stats/".$this->title."/companies/".$companyId;
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getCompanyCommendations
+     *
+     * Return commendations of the given company
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/596968ade2f7f7051870d2a0?
+     *
+     * @param $companyId: ID of the company wanted
+     *
+     * @return $oJson: json object containing company commendations data
+     */
+    public function getCompanyCommendations($companyId){
+        $url = self::BASE_URL."stats/".$this->title."/companies/".$companyId."/commendations";
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getLeaderboard
+     *
+     * Return leaderboard for givent season and playlist
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b35?
+     *
+     * @param $seasonId: ID of the season wanted
+     * @param $playlistId: ID of the playlist wanted
+     * @param $count: number of records to return (if not set, will return 200)
+     *
+     * @return $oJson: json object containing leaderboard data
+     */
+    public function getLeaderboard($seasonId, $playlistId, $count = null){
+        $url = self::BASE_URL."stats/".$this->title."/player-leaderboards/csr/".$seasonId."/".$playlistId;
+
+        if(!is_null($count)){
+            $url.= "?count=".$count;
+        }
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getMatchEvents
+     *
+     * Return events of the given match
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b36?
+     *
+     * @param $matchId: ID of the match wanted
+     *
+     * @return $oJson: json object containing match events data
+     */
+    public function getMatchEvents($matchId){
+        $url = self::BASE_URL."stats/".$this->title."/matches/".$matchId."/events";
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerCommendations
+     *
+     * Return player commendations
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/596968ade2f7f7051870d2a1?
+     *
+     * @param $playerId: ID of the player wanted
+     *
+     * @return $oJson: json object containing company data
+     */
+    public function getPlayerCommendations($playerId){
+        $url = self::BASE_URL."stats/".$this->title."/players/".$playerId."/commendations";
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
      * @name getPlayerMatches
      *
      * Return a list of all last matches of player
      *
-     * @param $aParams: array - default: null
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b3b?
+     *
+     * @param $params: array - default: null
      *          'modes': the id of the mode wanted - if not set, all modes are loaded - separate modes by coma
      *          'start': the id of first element to return - if not set or set to 0, first match will be sent
      *          'count': the number of elements to return - if not set return 25
      *
      * @return $oJson: json object containing all matches datas
      */
-    public function getPlayerMatches($aParams = array()){
-        $sUrl = self::BASE_URL."stats/".$this->sTitle."/players/".$this->aPlayerNames[0]."/matches";
+    public function getPlayerMatches($params = array()){
+        $url = self::BASE_URL."stats/".$this->title."/players/".$this->playerNames[0]."/matches";
         $i = 0;
-        if(isset($aParams['modes']) && !is_null($aParams['modes'])){
-            $sUrl .= ($i == 0 ? "?" : "&")."modes=".$aParams['modes'];
+        if(isset($params['modes']) && !is_null($params['modes'])){
+            $url .= ($i == 0 ? "?" : "&")."modes=".$params['modes'];
             $i++;
         }
-        if(isset($aParams['start']) && !is_null($aParams['start'])){
-            $sUrl .= ($i == 0 ? "?" : "&")."start=".$aParams['start'];
+        if(isset($params['start']) && !is_null($params['start'])){
+            $url .= ($i == 0 ? "?" : "&")."start=".$params['start'];
             $i++;
         }
-        if(isset($aParams['count']) && !is_null($aParams['count'])){
-            $sUrl .= ($i == 0 ? "?" : "&")."count=".$aParams['count'];
+        if(isset($params['count']) && !is_null($params['count'])){
+            $url .= ($i == 0 ? "?" : "&")."count=".$params['count'];
             $i++;
         }
 
-        $response = $this->callAPI($sUrl);
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
 
     /**
-     * @name getPostGameCarnage
+     * @name getMatchResult
      *
      * Return datas of given match
      *
-     * @param $sMatchId: id of the match wanted
-     * @param $sMatchType: type of the wanted match (arena, campaign, custom or warzone)
+     * Endpoint documentation:
+     * Arena:           https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b37?
+     * Campaign:        https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b38?
+     * Custom:          https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b39?
+     * Custom local:    https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/5a3d9a2e51059d1090806fe8?
+     * Warzone:         https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b3a?
+     *
+     * @param $matchId: id of the match wanted
+     * @param $matchType: type of the wanted match (arena, campaign, custom, customlocal or warzone)
      *
      * @return $oJson: json object containing match datas
      */
-    public function getPostGameCarnage($sMatchId, $sMatchType){
-        $sUrl = self::BASE_URL."stats/".$this->sTitle."/".$sMatchType."/matches/".$sMatchId;
-        $response = $this->callAPI($sUrl);
+    public function getMatchResult($matchId, $matchType){
+        $url = self::BASE_URL."stats/".$this->title."/".$matchType."/matches/".$matchId;
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
@@ -582,23 +792,160 @@ class haloapi
      *
      * Return datas of given match
      *
-     * @param $sMatchType: type of the wanted match (arena, campaign, custom or warzone)
+     * Endpoint documentation:
+     * Arena:           https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b3c?
+     * Campaign:        https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b3d?
+     * Custom:          https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b3e?
+     * Custom local:    https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/5a3d9a2e51059d1090806fe9?
+     * Warzone:         https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b3f?
+     *
+     *
+     * @param $matchType: type of the wanted match (arena, campaign, custom, customelocal or warzone)
      *
      * @return $oJson: json object containing match datas
      */
-    public function getServiceRecords($sMatchType){
-        $sUrl = self::BASE_URL."stats/".$this->sTitle."/servicerecords/".$sMatchType;
-        
+    public function getServiceRecords($matchType){
+        $url = self::BASE_URL."stats/".$this->title."/servicerecords/".$matchType;
 
-        foreach($this->aPlayerNames as $id => $val){
-            $sUrl .= ($id == 0 ? "?players=" : ",").$val;
+
+        foreach($this->playerNames as $id => $val){
+            $url .= ($id == 0 ? "?players=" : ",").$val;
         }
 
-        $response = $this->callAPI($sUrl);
+        $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
     }
 
+###
+
+### UGC parts
+
+    /**
+     * @name getPlayerGameVariant
+     *
+     * Return metadata for given player and game variant
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acde2921091812784ce8c3/operations/58acde292109180bdcacc40c
+     *
+     * @param $playerId: ID of the player wanted
+     * @param $variantId: ID of the variant wanted
+     *
+     * @return $oJson: json object containing variant data
+     */
+    public function getPlayerGameVariant($playerId, $variantId){
+        $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/gamevariants/".$variantId;
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerGameVariants
+     *
+     * Return a list of game variants created by given player
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acde2921091812784ce8c3/operations/58acde292109180bdcacc40d?
+     *
+     * @param $playerId: ID of the player wanted
+     * @param $params: 'start': Starting index (0 if not set)
+     *                  'count' : maximum number of items to return
+     *                  'sort' : Field to should be used to sort data
+     *                  'order' : Order for filter - desc if not set
+     *
+     * @return $oJson: json object containing all variants data
+     */
+    public function getPlayerGameVariants($playerId, $params = null){
+        $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/gamevariants";
+
+        $i = 0;
+        if(isset($params['start']) && !is_null($params['start'])){
+            $url .= ($i == 0 ? "?" : "&")."start=".$params['start'];
+            $i++;
+        }
+        if(isset($params['count']) && !is_null($params['count'])){
+            $url .= ($i == 0 ? "?" : "&")."count=".$params['count'];
+            $i++;
+        }
+        if(isset($params['sort']) && !is_null($params['sort'])){
+            $url .= ($i == 0 ? "?" : "&")."sort=".$params['sort'];
+            $i++;
+        }
+        if(isset($params['order']) && !is_null($params['order'])){
+            $url .= ($i == 0 ? "?" : "&")."order=".$params['order'];
+            $i++;
+        }
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerMapVariant
+     *
+     * Return metadata for given player and map variant
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acde2921091812784ce8c3/operations/58acde292109180bdcacc40e?
+     *
+     * @param $playerId: ID of the player wanted
+     * @param $variantId: ID of the variant wanted
+     *
+     * @return $oJson: json object containing variant data
+     */
+    public function getPlayerMapVariant($playerId, $variantId){
+        $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/mapvariants/".$variantId;
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerMapVariants
+     *
+     * Return a list of game variants created by given player
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58acde2921091812784ce8c3/operations/58acde292109180bdcacc40f?
+     *
+     * @param $playerId: ID of the player wanted
+     * @param $params: 'start': Starting index (0 if not set)
+     *                  'count' : maximum number of items to return
+     *                  'sort' : Field to should be used to sort data
+     *                  'order' : Order for filter - desc if not set
+     *
+     * @return $oJson: json object containing all variants data
+     */
+    public function getPlayerMapVariants($playerId, $params = null){
+        $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/mapvariants";
+
+        $i = 0;
+        if(isset($params['start']) && !is_null($params['start'])){
+            $url .= ($i == 0 ? "?" : "&")."start=".$params['start'];
+            $i++;
+        }
+        if(isset($params['count']) && !is_null($params['count'])){
+            $url .= ($i == 0 ? "?" : "&")."count=".$params['count'];
+            $i++;
+        }
+        if(isset($params['sort']) && !is_null($params['sort'])){
+            $url .= ($i == 0 ? "?" : "&")."sort=".$params['sort'];
+            $i++;
+        }
+        if(isset($params['order']) && !is_null($params['order'])){
+            $url .= ($i == 0 ? "?" : "&")."order=".$params['order'];
+            $i++;
+        }
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
 
 
 ###

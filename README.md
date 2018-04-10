@@ -1,10 +1,11 @@
-# PHP-HaloAPI v1.0.3-beta
+# PHP-HaloAPI v2.0.0-beta
 
 **This is a beta project**
 
+For now, only supports Halo 5. Support for Halo Wars 2 and Halo 5 PC will come later.
 
 ## Presentation
-This class has for purpose to simplify the work of PHP developers who wants to use the official Halo 5 API (beta).
+This class has for purpose to simplify the work of PHP developers who wants to use the official Halo API (beta).
 
 ## Requirements
 * Halo API key  (https://developer.haloapi.com/)
@@ -58,5 +59,5 @@ See _example.composer.php_ file for concrete example.
 This project is under **Apache 2.0** licence. See licence file.
 
 ## Changelog
-* Adding vagrant to project for development purpose
+* Adding all missing endpoints
 
