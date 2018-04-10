@@ -46,7 +46,7 @@ echo -e "\n--- SETUP VAGRANT AS WEB ROOT ---\n"
 sed -i "s/DocumentRoot \/var\/www\/html/DocumentRoot \/var\/www/g" /etc/apache2/sites-enabled/000-default.conf >> /vagrant/vm_build.log 2>&1
 if ! [ -L /var/www ]; then
   rm -rf /var/www >> /vagrant/vm_build.log 2>&1
-  ln -fs /vagrant/www /var/www >> /vagrant/vm_build.log 2>&1
+  ln -fs /vagrant/ /var/www >> /vagrant/vm_build.log 2>&1
 fi
 
 echo -e "\n--- ENABLE PHP ERRORS ---\n"

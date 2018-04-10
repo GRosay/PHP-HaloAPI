@@ -1,0 +1,4 @@
+.vagrant/
+vendor/
+vm_build.log
+composer.lock
