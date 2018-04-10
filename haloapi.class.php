@@ -526,7 +526,7 @@ class haloapi
      * @return $oJson: json object containing skulls data
      */
     public function getSkulls(){
-        $url = self::BASE_URL."metadata/".$this->title."/metadata/playlists";
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/skulls";
         $response = $this->callAPI($url);
 
         return $this->decodeJson($response['body']);
