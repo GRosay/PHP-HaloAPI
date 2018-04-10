@@ -1,8 +1,8 @@
 {
     "name": "bananassplitter/php-haloapi",
-    "description": "This package has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API",
-    "license": "WTFPL",
-    "version": "v1.0.3-beta",
+    "description": "This package has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo API",
+    "license": "Apache-2.0",
+    "version": "v2.0.0-beta",
     "authors": [
         {
             "name": "Gaspard Rosay - BananasSplitter",
