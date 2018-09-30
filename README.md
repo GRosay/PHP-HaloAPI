@@ -1,4 +1,4 @@
-# PHP-HaloAPI v2.0.0-beta
+# PHP-HaloAPI v1.0.0 (release)
 
 **This is a beta project**
 
