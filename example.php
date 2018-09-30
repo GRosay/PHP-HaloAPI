@@ -12,6 +12,8 @@
  *
  */
 
+error_reporting(E_ALL);
+
 require_once('haloapi.class.php');
 
 $aPlayerNames = array('BananasSplitter', 'SatanicGeek'); // Creating an array of player.
