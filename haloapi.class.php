@@ -55,19 +55,23 @@ class haloapi
      *
      * @return $response: the API response
      */
-    private function callAPI($url){
+    private function callAPI($url, $lang=null){
         self::throttle();
 
         $ch = curl_init();
+
+        $httpheader = array('Ocp-Apim-Subscription-Key' => $this->apiKey);
+
+        if(!is_null($lang)){
+            $httpheader['Accept-Language'] = $lang;
+        }
 
         curl_setopt_array($ch, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HEADER         => true,
             CURLOPT_URL            => $url,
             CURLOPT_USERAGENT      => 'PHP-HaloAPI',
-            CURLOPT_HTTPHEADER     => array(
-                'Ocp-Apim-Subscription-Key: '.$this->apiKey
-            )
+            CURLOPT_HTTPHEADER     => $httpheader
         ));
 
         $resp = curl_exec($ch);
@@ -262,9 +266,9 @@ class haloapi
      *
      * @return $oJson: json object containing campaign informations
      */
-    public function getCampaignMissions(){
+    public function getCampaignMissions($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/campaign-missions";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -279,9 +283,26 @@ class haloapi
      *
      * @return $oJson: json object containing commendations data
      */
-    public function getCommendations(){
+    public function getCommendations($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/commendations";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getMetaCompayComendations
+     *
+     * Return information about all Company Commendations
+     *
+     * Endpoint documentation:
+     * https://developer.haloapi.com/docs/services/58ace18c21091812784ce8c5/operations/Halo-5-Company-Commendations?
+     *
+     * @return $oJson: json object containing commendations data
+     */
+    public function getMetaCompayComendations($lang = null){
+        $url = self::BASE_URL."metadata/".$this->title."/metadata/company-commendations";
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -296,9 +317,9 @@ class haloapi
      *
      * @return $oJson: json object containing csr designations data
      */
-    public function getCSRDesignations(){
+    public function getCSRDesignations($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/csr-designations";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -313,9 +334,9 @@ class haloapi
      *
      * @return $oJson: json object containing enemies data
      */
-    public function getEnemies(){
+    public function getEnemies($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/enemies";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -330,9 +351,9 @@ class haloapi
      *
      * @return $oJson: json object containing flexible stats data
      */
-    public function getFlexibleStats(){
+    public function getFlexibleStats($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/flexible-stats";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -347,9 +368,9 @@ class haloapi
      *
      * @return $oJson: json object containing game base variants data
      */
-    public function getGameBaseVariants(){
+    public function getGameBaseVariants($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/game-base-variants";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -366,9 +387,9 @@ class haloapi
      *
      * @return $oJson: json object containing game variant data
      */
-    public function getGameVariantData($variantId){
+    public function getGameVariantData($variantId, $lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/game-variants/".$variantId;
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -383,9 +404,9 @@ class haloapi
      *
      * @return $oJson: json object containing impulses data
      */
-    public function getImpulses(){
+    public function getImpulses($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/impulses";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -402,9 +423,9 @@ class haloapi
      *
      * @return $oJson: json object containing datas of map variant
      */
-    public function getMapVariantData($variantId){
+    public function getMapVariantData($variantId, $lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/map-variant/".$variantId;
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -419,9 +440,9 @@ class haloapi
      *
      * @return $oJson: json object containing maps data
      */
-    public function getMaps(){
+    public function getMaps($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/maps";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -436,9 +457,9 @@ class haloapi
      *
      * @return $oJson: json object containing medals data
      */
-    public function getMedals(){
+    public function getMedals($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/medals";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -453,9 +474,9 @@ class haloapi
      *
      * @return $oJson: json object containing playlists data
      */
-    public function getPlaylists(){
+    public function getPlaylists($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/playlists";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -472,9 +493,9 @@ class haloapi
      *
      * @return $oJson: json object containing requisition data
      */
-    public function getRequisition($requisitionId){
+    public function getRequisition($requisitionId, $lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/requisitions/".$requisitionId;
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -491,9 +512,9 @@ class haloapi
      **
      * @return $oJson: json object containing requisition pack data
      */
-    public function getRequisitionPack($packId){
+    public function getRequisitionPack($packId, $lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/requisition-packs/".$packId;
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -508,9 +529,9 @@ class haloapi
      *
      * @return $oJson: json object containing seasons data
      */
-    public function getSeasons(){
+    public function getSeasons($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/seasons/";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -525,9 +546,9 @@ class haloapi
      *
      * @return $oJson: json object containing skulls data
      */
-    public function getSkulls(){
+    public function getSkulls($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/skulls";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -542,9 +563,9 @@ class haloapi
      *
      * @return $oJson: json object containing spartan ranks data
      */
-    public function getSpartanRanks(){
+    public function getSpartanRanks($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/spartan-ranks";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -559,9 +580,9 @@ class haloapi
      *
      * @return $oJson: json object containing team colors data
      */
-    public function getTeamColors(){
+    public function getTeamColors($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/team-colors";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -576,9 +597,9 @@ class haloapi
      *
      * @return $oJson: json object containing vehicles data
      */
-    public function getVehicles(){
+    public function getVehicles($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/vehicles";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -593,9 +614,9 @@ class haloapi
      *
      * @return $oJson: json object containing weapons data
      */
-    public function getWeapons(){
+    public function getWeapons($lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/weapons";
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
@@ -611,9 +632,9 @@ class haloapi
      *
      * @return $oJson: json object containing weapons data
      */
-    public function getMetadata($metadata, $id = null){
+    public function getMetadata($metadata, $id = null, $lang = null){
         $url = self::BASE_URL."metadata/".$this->title."/metadata/".$metadata.(!is_null($id) ? "/".$id : null);
-        $response = $this->callAPI($url);
+        $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
     }
