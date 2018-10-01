@@ -9,8 +9,6 @@
             "email": "gaspard@rosay.ch"
         }
     ],
-    "minimum-stability": "stable",
-    "preferred-install": "stable",
     "require": {
     	"php": ">=5.3.0"
     },
