@@ -4,8 +4,6 @@
 [![Total Downloads](https://poser.pugx.org/bananassplitter/php-haloapi/downloads)](https://packagist.org/packages/bananassplitter/php-haloapi)
 [![License](https://poser.pugx.org/bananassplitter/php-haloapi/license)](https://packagist.org/packages/bananassplitter/php-haloapi)
 
-**This is a beta project**
-
 For now, only supports Halo 5. Support for Halo Wars 2 and Halo 5 PC will come later.
 
 ## Presentation
