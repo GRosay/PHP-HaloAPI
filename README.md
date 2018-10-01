@@ -1,4 +1,4 @@
-# PHP-HaloAPI v3.0.0 (release)
+# PHP-HaloAPI v3.0.1 (release)
 
 [![Latest Stable Version](https://poser.pugx.org/bananassplitter/php-haloapi/v/stable)](https://packagist.org/packages/bananassplitter/php-haloapi)
 [![Total Downloads](https://poser.pugx.org/bananassplitter/php-haloapi/downloads)](https://packagist.org/packages/bananassplitter/php-haloapi)
