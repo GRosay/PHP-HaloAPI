@@ -3,7 +3,7 @@
 /**
  *
  * PHP-HaloAPI
- * v 2.0.0-beta
+ * v 3.0.0
  *
  * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API.
  *
@@ -58,7 +58,7 @@ class haloapi
      *
      * @return $response: the API response
      */
-    private function callAPI($url){
+    private function callAPI($url, $lang=null){
         self::throttle();
 
         $ch = curl_init();

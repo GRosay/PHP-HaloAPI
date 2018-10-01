@@ -13,7 +13,7 @@ apt-get -y install curl >> /vagrant/vm_build.log 2>&1
 apt-get -y install php-curl >> /vagrant/vm_build.log 2>&1
 
 echo -e "\n--- INSTALL PHP ---\n"
-apt-get -y install php apache2 libapache2-mod-php php-curl php-gd php-mysql php-gettext php7.0-zipse >> /vagrant/vm_build.log 2>&1
+apt-get -y install php apache2 libapache2-mod-php php-curl php-gd php-mysql php-gettext php7.0-zip composer >> /vagrant/vm_build.log 2>&1
 
 echo -e "\n--- INSTALL XDEBUG ---\n"
 apt-get -y install php-xdebug >> /vagrant/vm_build.log 2>&1
