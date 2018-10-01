@@ -2,7 +2,7 @@
     "name": "bananassplitter/php-haloapi",
     "description": "This package has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo API",
     "license": "Apache-2.0",
-    "version": "3.0.0",
+    "version": "v3.0.0",
     "authors": [
         {
             "name": "Gaspard Rosay - BananasSplitter",
