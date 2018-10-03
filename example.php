@@ -16,16 +16,9 @@ error_reporting(E_ALL);
 
 require_once('haloapi.class.php');
 
-$aPlayerNames = array('BananasSplitter', 'SatanicGeek'); // Creating an array of player.
 $sApiKey = "****";
-$oHaloApi = new haloapi($sApiKey, $aPlayerNames); // Initializing the class
+$oHaloApi = new haloapi($sApiKey, ['BananasSplitter', 'SatanicGeek'], 'hw2'); // Initializing the class
 
 
-$sEmblemUrl = $oHaloApi->getEmblem(512); // Get emblem img - size of 512
-
-echo "<img src='$sEmblemUrl' />";
-
-$oJson = $oHaloApi->getServiceRecords("campaign"); // Get service records for campaign
-
-echo "<pre>".print_r($oJson, 1)."</pre>";
+$sEmblemUrl = $oHaloApi->getAppearance();
 
