@@ -3,9 +3,9 @@
 /**
  *
  * PHP-HaloAPI
- * v 3.0.0
+ * v 4.0.0
  *
- * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo 5 API.
+ * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo API.
  *
  * Author: Gaspard Rosay - @BananasSplitter
  *
@@ -22,7 +22,8 @@ class haloapi
     const BASE_URL          = "https://www.haloapi.com/"; // Base url for API, may change on day...
 
     private $apiKey        = ""; // Will contain the API key
-    private $title         = ""; // Correspond to the game title - for now only Halo 5 (title = h5)
+    private $title         = ""; // Correspond to the game title
+    private $titles        = ["h5", "hw2"];
     private $playerNames   = array(); // List of users (functions may use only the first user)
 
     private $lastHeaders    = array(); // Array of parsed headers from the last API call
@@ -40,23 +41,25 @@ class haloapi
      * Initialize the class
      *
      * @param $playerNames: an array containing list of players
-     * @param $title: the title concerned by the API (for now, only h5 is valid) - default: h5
+     * @param $title: the title concerned by the API - default: h5
      */
     function __construct($apiKey, $playerNames, $title = "h5"){
+        if(!in_array($title, $this->titles)){
+            trigger_error("The title " . $title." is not supported!", E_USER_ERROR);
+            return false;
+        }
         $this->apiKey = $apiKey;
         $this->playerNames = $playerNames;
         $this->title = $title;
     }
 
 ### Global functions
+
     /**
-     * @name callAPI
+     * @param $url : url to use in API call
      *
-     * Make curl request to the API
-     *
-     * @param $url: url to use in API call
-     *
-     * @return $response: the API response
+     * @param null $lang
+     * @return array $response: the API response
      */
     private function callAPI($url, $lang=null){
         self::throttle();
@@ -200,6 +203,10 @@ class haloapi
      * @return $oJson: json object containing player's Metadata
      */
     public function getAppearance(){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."profile/".$this->title."/profiles/".$this->playerNames[0]."/appearance";
         $response = $this->callAPI($url);
 
@@ -219,6 +226,10 @@ class haloapi
      * @return $aHeader['location']: url of the img
      */
     public function getEmblem($size = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."profile/".$this->title."/profiles/".$this->playerNames[0]."/emblem";
 
         if(!is_null($size)){
@@ -244,6 +255,10 @@ class haloapi
      * @return $aHeader['location']: url of the img
      */
     public function getSpartanImg($size = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."profile/".$this->title."/profiles/".$this->playerNames[0]."/spartan";
 
         if(!is_null($size)){
@@ -270,6 +285,10 @@ class haloapi
      * @return $oJson: json object containing campaign informations
      */
     public function getCampaignMissions($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/campaign-missions";
         $response = $this->callAPI($url, $lang);
 
@@ -287,6 +306,10 @@ class haloapi
      * @return $oJson: json object containing commendations data
      */
     public function getCommendations($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/commendations";
         $response = $this->callAPI($url, $lang);
 
@@ -304,6 +327,10 @@ class haloapi
      * @return $oJson: json object containing commendations data
      */
     public function getMetaCompayComendations($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/company-commendations";
         $response = $this->callAPI($url, $lang);
 
@@ -320,8 +347,9 @@ class haloapi
      *
      * @return $oJson: json object containing csr designations data
      */
-    public function getCSRDesignations($lang = null){
-        $url = self::BASE_URL."metadata/".$this->title."/metadata/csr-designations";
+    public function getCSRDesignations($start = null, $lang = null){
+        $url = self::BASE_URL."metadata/".$this->title. ( $this->title == 'h5' ? "/metadata/" : "/")."csr-designations".
+            ($this->title != 'h5' && !is_null($start) ? "?startAt=".$start : null);
         $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
@@ -338,6 +366,10 @@ class haloapi
      * @return $oJson: json object containing enemies data
      */
     public function getEnemies($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/enemies";
         $response = $this->callAPI($url, $lang);
 
@@ -355,6 +387,10 @@ class haloapi
      * @return $oJson: json object containing flexible stats data
      */
     public function getFlexibleStats($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/flexible-stats";
         $response = $this->callAPI($url, $lang);
 
@@ -372,6 +408,10 @@ class haloapi
      * @return $oJson: json object containing game base variants data
      */
     public function getGameBaseVariants($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/game-base-variants";
         $response = $this->callAPI($url, $lang);
 
@@ -391,6 +431,10 @@ class haloapi
      * @return $oJson: json object containing game variant data
      */
     public function getGameVariantData($variantId, $lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/game-variants/".$variantId;
         $response = $this->callAPI($url, $lang);
 
@@ -408,6 +452,10 @@ class haloapi
      * @return $oJson: json object containing impulses data
      */
     public function getImpulses($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/impulses";
         $response = $this->callAPI($url, $lang);
 
@@ -427,6 +475,10 @@ class haloapi
      * @return $oJson: json object containing datas of map variant
      */
     public function getMapVariantData($variantId, $lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/map-variant/".$variantId;
         $response = $this->callAPI($url, $lang);
 
@@ -443,8 +495,9 @@ class haloapi
      *
      * @return $oJson: json object containing maps data
      */
-    public function getMaps($lang = null){
-        $url = self::BASE_URL."metadata/".$this->title."/metadata/maps";
+    public function getMaps($start = null, $lang = null){
+        $url = self::BASE_URL."metadata/".$this->title.( $this->title == 'h5' ? "/metadata/" : "/")."maps".
+            ($this->title != 'h5' && !is_null($start) ? "?startAt=".$start : null);
         $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
@@ -461,6 +514,10 @@ class haloapi
      * @return $oJson: json object containing medals data
      */
     public function getMedals($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/medals";
         $response = $this->callAPI($url, $lang);
 
@@ -477,8 +534,10 @@ class haloapi
      *
      * @return $oJson: json object containing playlists data
      */
-    public function getPlaylists($lang = null){
-        $url = self::BASE_URL."metadata/".$this->title."/metadata/playlists";
+    public function getPlaylists($start = null, $lang = null){
+
+        $url = self::BASE_URL."metadata/".$this->title.( $this->title == 'h5' ? "/metadata/" : "/")."playlists".
+            ($this->title != 'h5' && !is_null($start) ? "?startAt=".$start : null);
         $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
@@ -497,6 +556,10 @@ class haloapi
      * @return $oJson: json object containing requisition data
      */
     public function getRequisition($requisitionId, $lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/requisitions/".$requisitionId;
         $response = $this->callAPI($url, $lang);
 
@@ -516,6 +579,10 @@ class haloapi
      * @return $oJson: json object containing requisition pack data
      */
     public function getRequisitionPack($packId, $lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/requisition-packs/".$packId;
         $response = $this->callAPI($url, $lang);
 
@@ -532,8 +599,9 @@ class haloapi
      *
      * @return $oJson: json object containing seasons data
      */
-    public function getSeasons($lang = null){
-        $url = self::BASE_URL."metadata/".$this->title."/metadata/seasons/";
+    public function getSeasons($start = null, $lang = null){
+        $url = self::BASE_URL."metadata/".$this->title.( $this->title == 'h5' ? "/metadata/" : "/")."seasons/".
+            ($this->title != 'h5' && !is_null($start) ? "?startAt=".$start : null);
         $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
@@ -550,6 +618,10 @@ class haloapi
      * @return $oJson: json object containing skulls data
      */
     public function getSkulls($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/skulls";
         $response = $this->callAPI($url, $lang);
 
@@ -566,8 +638,9 @@ class haloapi
      *
      * @return $oJson: json object containing spartan ranks data
      */
-    public function getSpartanRanks($lang = null){
-        $url = self::BASE_URL."metadata/".$this->title."/metadata/spartan-ranks";
+    public function getSpartanRanks($start = null, $lang = null){
+        $url = self::BASE_URL."metadata/".$this->title.( $this->title == 'h5' ? "/metadata/" : "/")."spartan-ranks".
+            ($this->title != 'h5' && !is_null($start) ? "?startAt=".$start : null);
         $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
@@ -584,6 +657,10 @@ class haloapi
      * @return $oJson: json object containing team colors data
      */
     public function getTeamColors($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/team-colors";
         $response = $this->callAPI($url, $lang);
 
@@ -601,6 +678,10 @@ class haloapi
      * @return $oJson: json object containing vehicles data
      */
     public function getVehicles($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/vehicles";
         $response = $this->callAPI($url, $lang);
 
@@ -618,7 +699,229 @@ class haloapi
      * @return $oJson: json object containing weapons data
      */
     public function getWeapons($lang = null){
+        if($this->title != 'h5'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."metadata/".$this->title."/metadata/weapons";
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getCampaignLevels
+     *
+     * Return campaign levels for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getCampaignLevels($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/campaign-levels".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getCampaignLogs
+     *
+     * Return campaign logs for Halo Wars 2
+     *
+     * @param null $start
+     * @return bool|mixed|string
+     */
+    public function getCampaignLogs($start = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/campaign-logs".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getCardKeywords
+     *
+     * Return cad keywords for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getCardKeywords($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/card-keywords".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getCards
+     *
+     * Return cards for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getCards($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/cards".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getDifficulties
+     *
+     * Return difficulties for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getDifficulties($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/difficulties".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getGameObjectCategories
+     *
+     * Return game object categories for Halo Wars 2
+     *
+     * @param null $start
+     * @return bool|mixed|string
+     */
+    public function getGameObjectCategories($start = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/game-object-categories".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getGameObjects
+     *
+     * Return game objects for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getGameObjects($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/game-objects".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getLeaderPowers
+     *
+     * Return leader powers for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getLeaderPowers($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/leader-powers".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getLeaders
+     *
+     * Return leaders for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getLeaders($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/leaders".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPacks
+     *
+     * Return packs for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getPacks($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/packs".(!is_null($start) ? "?startAt=".$start : null);
+        $response = $this->callAPI($url, $lang);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getTechs
+     *
+     * Return techs for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getTechs($start = null, $lang = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."metadata/".$this->title."/techs".(!is_null($start) ? "?startAt=".$start : null);
         $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
@@ -636,7 +939,7 @@ class haloapi
      * @return $oJson: json object containing weapons data
      */
     public function getMetadata($metadata, $id = null, $lang = null){
-        $url = self::BASE_URL."metadata/".$this->title."/metadata/".$metadata.(!is_null($id) ? "/".$id : null);
+        $url = self::BASE_URL."metadata/".$this->title.($this->title == 'h5' ? "/metadata/" : "/") .$metadata.(!is_null($id) ? "/".$id : null);
         $response = $this->callAPI($url, $lang);
 
         return $this->decodeJson($response['body']);
@@ -757,7 +1060,8 @@ class haloapi
      * https://developer.haloapi.com/docs/services/58acdf27e2f7f71ad0dad84b/operations/58acdf28e2f7f70db4854b3b?
      *
      * @param $params: array - default: null
-     *          'modes': the id of the mode wanted - if not set, all modes are loaded - separate modes by coma
+     *          'modes': the id of the mode wanted - if not set, all modes are loaded - separate modes by coma - for h5
+     *          'matchType': the id of the matchType wanted - if not set, all matchtypes are loaded - separate modes by coma - for hw2
      *          'start': the id of first element to return - if not set or set to 0, first match will be sent
      *          'count': the number of elements to return - if not set return 25
      *
@@ -768,6 +1072,10 @@ class haloapi
         $i = 0;
         if(isset($params['modes']) && !is_null($params['modes'])){
             $url .= ($i == 0 ? "?" : "&")."modes=".$params['modes'];
+            $i++;
+        }
+        if(isset($params['matchType']) && !is_null($params['matchType'])){
+            $url .= ($i == 0 ? "?" : "&")."matchType=".$params['matchType'];
             $i++;
         }
         if(isset($params['start']) && !is_null($params['start'])){
@@ -838,6 +1146,128 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getPlayerCampaignProgress
+     *
+     * Return player campaign progress for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getPlayerCampaignProgress($matchType){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."stats/".$this->title."/players/".$this->playerNames[0]."/campaign-progress";
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerPlaylistRatings
+     *
+     * Return player playlist ratings for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getPlayerPlaylistRatings($playlistId){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."stats/".$this->title."/playlist/".$playlistId."/rating?players=";
+
+        $i=0;
+        foreach($this->playerNames as $player){
+            $url.=$player.($i<5 ? ",":null);
+            $i++;
+            if($i==6)
+                break;
+        }
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getSeasonStatsSummary
+     *
+     * Return season stats summary for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getSeasonStatsSummary($seasonId){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."stats/".$this->title."/players/".$this->playerNames[0]."/stats/seasons/".$seasonId;
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerStatsSummary
+     *
+     * Return player stats summary for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getPlayerStatsSummary($seasonId){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."stats/".$this->title."/players/".$this->playerNames[0]."/stats";
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+    /**
+     * @name getPlayerXPs
+     *
+     * Return player xp for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
+    public function getPlayerXPs(){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
+        $url = self::BASE_URL."stats/".$this->title."/xp?players=";
+
+        $i=0;
+        foreach($this->playerNames as $player){
+            $url.=$player.($i<5 ? ",":null);
+            $i++;
+            if($i==6)
+                break;
+        }
+
+        $response = $this->callAPI($url);
+
+        return $this->decodeJson($response['body']);
+    }
+
+
 ###
 
 ### UGC parts
@@ -856,6 +1286,10 @@ class haloapi
      * @return $oJson: json object containing variant data
      */
     public function getPlayerGameVariant($playerId, $variantId){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/gamevariants/".$variantId;
 
         $response = $this->callAPI($url);
@@ -880,6 +1314,10 @@ class haloapi
      * @return $oJson: json object containing all variants data
      */
     public function getPlayerGameVariants($playerId, $params = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/gamevariants";
 
         $i = 0;
@@ -919,6 +1357,10 @@ class haloapi
      * @return $oJson: json object containing variant data
      */
     public function getPlayerMapVariant($playerId, $variantId){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/mapvariants/".$variantId;
 
         $response = $this->callAPI($url);
@@ -943,6 +1385,10 @@ class haloapi
      * @return $oJson: json object containing all variants data
      */
     public function getPlayerMapVariants($playerId, $params = null){
+        if($this->title != 'hw2'){
+            trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
+            return false;
+        }
         $url = self::BASE_URL."ugc/".$this->title."/players/".$playerId."/mapvariants";
 
         $i = 0;
