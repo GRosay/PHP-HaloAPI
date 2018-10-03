@@ -3,7 +3,7 @@
 /**
  *
  * PHP-HaloAPI
- * v 4.0.0-dev
+ * v 4.0.0
  *
  * This class has for purpose to simplify the work of PHP developers who wants to use the official (beta) Halo API.
  *
