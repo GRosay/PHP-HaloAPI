@@ -63,3 +63,7 @@ This project is under **Apache 2.0** licence. See licence file.
 * 2018-10-03: Adding Halo Wars 2 endpoints + return error when title not supported
 * Adding all missing endpoints
 
+## Legal notice
+This project is not supported/developed/affiliated in any way by/with Halo, 343 Industries or Microsoft. 
+
+Halo is a game developed by 343 Industries. 
