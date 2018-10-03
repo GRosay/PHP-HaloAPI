@@ -19,7 +19,8 @@ class haloapi
     const BASE_URL          = "https://www.haloapi.com/"; // Base url for API, may change on day...
 
     private $apiKey        = ""; // Will contain the API key
-    private $title         = ""; // Correspond to the game title - for now only Halo 5 (title = h5)
+    private $title         = ""; // Correspond to the game title
+    private $titles        = ["h5", "hw2"];
     private $playerNames   = array(); // List of users (functions may use only the first user)
 
     private $lastHeaders    = array(); // Array of parsed headers from the last API call
@@ -40,6 +41,10 @@ class haloapi
      * @param $title: the title concerned by the API - default: h5
      */
     function __construct($apiKey, $playerNames, $title = "h5"){
+        if(!in_array($title, $this->titles)){
+            trigger_error("The title " . $title." is not supported!", E_USER_ERROR);
+            return false;
+        }
         $this->apiKey = $apiKey;
         $this->playerNames = $playerNames;
         $this->title = $title;
@@ -721,6 +726,14 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getCampaignLogs
+     *
+     * Return campaign logs for Halo Wars 2
+     *
+     * @param null $start
+     * @return bool|mixed|string
+     */
     public function getCampaignLogs($start = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -732,6 +745,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getCardKeywords
+     *
+     * Return cad keywords for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getCardKeywords($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -743,6 +765,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getCards
+     *
+     * Return cards for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getCards($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -754,6 +785,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getDifficulties
+     *
+     * Return difficulties for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getDifficulties($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -765,6 +805,14 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getGameObjectCategories
+     *
+     * Return game object categories for Halo Wars 2
+     *
+     * @param null $start
+     * @return bool|mixed|string
+     */
     public function getGameObjectCategories($start = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -776,6 +824,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getGameObjects
+     *
+     * Return game objects for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getGameObjects($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -787,6 +844,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getLeaderPowers
+     *
+     * Return leader powers for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getLeaderPowers($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -798,6 +864,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getLeaders
+     *
+     * Return leaders for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getLeaders($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -809,6 +884,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getPacks
+     *
+     * Return packs for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getPacks($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -820,6 +904,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getTechs
+     *
+     * Return techs for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getTechs($start = null, $lang = null){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -1050,6 +1143,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getPlayerCampaignProgress
+     *
+     * Return player campaign progress for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getPlayerCampaignProgress($matchType){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -1062,6 +1164,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getPlayerPlaylistRatings
+     *
+     * Return player playlist ratings for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getPlayerPlaylistRatings($playlistId){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -1082,6 +1193,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getSeasonStatsSummary
+     *
+     * Return season stats summary for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getSeasonStatsSummary($seasonId){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -1094,6 +1214,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getPlayerStatsSummary
+     *
+     * Return player stats summary for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getPlayerStatsSummary($seasonId){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);
@@ -1106,6 +1235,15 @@ class haloapi
         return $this->decodeJson($response['body']);
     }
 
+    /**
+     * @name getPlayerXPs
+     *
+     * Return player xp for Halo Wars 2
+     *
+     * @param null $start
+     * @param null $lang
+     * @return bool|mixed|string
+     */
     public function getPlayerXPs(){
         if($this->title != 'hw2'){
             trigger_error("Method ".__METHOD__ ." not implemented for the title " . $this->title, E_USER_WARNING);

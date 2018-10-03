@@ -60,5 +60,6 @@ See _example.composer.php_ file for concrete example.
 This project is under **Apache 2.0** licence. See licence file.
 
 ## Changelog
+* 2018-10-03: Adding Halo Wars 2 endpoints + return error when title not supported
 * Adding all missing endpoints
 
